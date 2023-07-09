@@ -22,6 +22,7 @@ parser.add_argument("data", help="The data to serve in the interface [see DOC...
 parser.add_argument("--backend_port", help="PORT number for the backend server", type=int, default=8899)
 parser.add_argument("--frontend_port", help="PORT number for the frontend server", type=int, default=8000)
 parser.add_argument("--config", help='describe the type of corpus: can be "ud" or "sud"', default="ud")
+parser.add_argument('--rtl', help="right_to_left script", action='store_true')
 args = parser.parse_args()
 
 cwd = os.getcwd()
@@ -68,7 +69,7 @@ if os.path.isdir(args.data):
   corpora_list = [{
     "id": os.path.basename(args.data),
     "config": args.config,
-    "snippets": args.config,
+    "rtl": args.rtl,
     "directory": os.path.abspath(args.data)}]
 else:
   with open(args.data, 'r') as f:
@@ -87,7 +88,7 @@ gm_config = {
     { 'id': 'local',
       'name': 'local',
       'style': 'single' if len(corpora_list) == 1 else 'dropdown',
-      'corpora': corpora_list,
+      'corpora': corpora_list
   }]
 }
 
