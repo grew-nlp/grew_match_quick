@@ -20,7 +20,7 @@ There are three ways to start **Grew-match quick**:
  - with a JSON configuration file describing one corpus
  - with a JSON configuration file describing a list of corpora
 
-### 1. with a folder
+### 1. With a folder
 
 Use one of the two commands:
 ```
@@ -47,7 +47,7 @@ git clone https://github.com/UniversalDependencies/UD_English-PUD.git
 python3 start.py UD_English-PUD
 ```
 
-### 2. with a JSON file describing one corpus
+### 2. With a JSON file describing one corpus
 
 A corpus can be described by a JSON object with the following keys:
  - `id`: the identifier of the corpus (the name used in the interface and some URLs)
@@ -74,11 +74,17 @@ The command below starts **Grew-match quick** (the `--config` option is not need
 python3 start.py ex.json
 ```
 
-### 3. with a JSON file describing a list or corpora
+### 3. With a JSON file describing a list or corpora
 
 The expected JSON file must contains an object with the `corpora` key associated to a list of corpus, each one discribed as above.
 
 See file [ud_2.12.json](https://gitlab.inria.fr/grew/grew_match_config/-/blob/master/corpora/ud_2.12.json) in the online Grew-match config for an example.
+
+## Generated files
+
+When running, the script will generated files:
+ - in each corpus used, a compiled version of the corpus is stored (a file with `.marshal` extension). These kind of files can be removed, they will be generated again later when needed.
+ - in a local folder named `local_files`. This folder will be rebuild if needed for future usage, it can be safely removed exept if you use the "Save" feature, removing `local_files` will also removed saved requests.
 
 
 ## In case of troubles

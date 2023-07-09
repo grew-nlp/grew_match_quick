@@ -34,6 +34,7 @@ if os.path.isdir("local_files/grew_match_back"):
 else:
   subprocess.run(['git', 'clone', 'https://gitlab.inria.fr/grew/grew_match_back.git'], cwd="local_files")
 full_gmb = os.path.abspath("local_files/grew_match_back")
+os.makedirs('local_files/grew_match_back/static/shorten', exist_ok=True)
 
 # -------------------------------------------------------------------------------------------------
 # Check the avaibility of the back port
