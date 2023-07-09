@@ -22,7 +22,7 @@ There are three ways to start **Grew-match quick**:
  - with a JSON configuration file describing one corpus
  - with a JSON configuration file describing a list of corpora
 
-Once everything is started, the script enter a loop with a prompt for the user.
+Once everything is started, the script enters a loop with a prompt for the user.
 The following commands are available:
  - 's' to stop the script
  - 'r' to recompile the corpora (this will update the data if some corpus is modified)
@@ -45,7 +45,7 @@ The option `--config=sud` shoud be added for SUD data.
 
 ### Example
 
-To start **Grew-match quick** on **UD_English-PUD**:
+To start **Grew-match quick** on a freshly cloned **UD_English-PUD**:
 
 ```
 git clone https://github.com/UniversalDependencies/UD_English-PUD.git
@@ -81,7 +81,7 @@ python3 start.py ex.json
 
 ## Starting with a JSON file describing a list or corpora
 
-The expected JSON file must contains an object with the `corpora` key associated to a list of corpus, each one discribed as above.
+The expected JSON file must contain an object with the `corpora` key associated to a list of corpus, each one discribed as above.
 
 See file [ud_2.12.json](https://gitlab.inria.fr/grew/grew_match_config/-/blob/master/corpora/ud_2.12.json) in the online Grew-match config for an example.
 
@@ -89,7 +89,7 @@ See file [ud_2.12.json](https://gitlab.inria.fr/grew/grew_match_config/-/blob/ma
 
 When running, the script will generated files:
  - in each corpus used, a compiled version of the corpus is stored (a file with `.marshal` extension). These kind of files can be removed, they will be generated again later when needed.
- - in a local folder named `local_files`. This folder will be rebuild if needed for future usage, it can be safely removed exept if you use the "Save" feature, removing `local_files` will also removed saved requests.
+ - in a local folder named `local_files`. This folder will be rebuild if needed for future usage, it can be safely removed exept if you use the "Save" feature, removing `local_files` will also remove saved requests.
 
 
 # In case of troubles
@@ -103,7 +103,7 @@ For example, the folder `examples/UD_English-Error-PUD` contains 10 sentences wi
 ```
 python3 start.py examples/UD_English-Error-PUD
 ```
-produced the log file at http://localhost:8000/meta/UD_English-Error-PUD.log with the following data:
+start Grew-match with the 7 correct setences and produced the log file at http://localhost:8000/meta/UD_English-Error-PUD.log with the following data:
 ```json
 {"message":"Cannot parse id zz","file":"/Users/guillaum/gitlab/grew/grew_match_quick/examples/UD_English-Error-PUD/10_sentences.conllu","sent_id":"n01001011","line":14,"library":"Conll"}
 {"message":"Wrong number of fields: 9 instead of 10 expected","file":"/Users/guillaum/gitlab/grew/grew_match_quick/examples/UD_English-Error-PUD/10_sentences.conllu","sent_id":"n01003007","line":187,"library":"Conll"}
@@ -113,9 +113,10 @@ produced the log file at http://localhost:8000/meta/UD_English-Error-PUD.log wit
 
 ## Already used PORT
 
-The application uses two ports, one for the frontend (`8000` by default) and one for the backend (`8899` by default). If one of these port is already used, the script will fail. In this case, you can use one of the two argument:
- - `--backend_port xxx` with a new availabe port number `xxx`
- - `--frontend_port yyy` with a new availabe port number `yyy` (the URL will be [http://localhost:yyy](http://localhost:yyy))
+The application uses two ports, one for the frontend (`8000` by default) and one for the backend (`8899` by default).
+If one of these ports is already used, the script will fail. In this case, you should use one of the two arguments:
+ - `--backend_port xxx` with an availabe port number `xxx`
+ - `--frontend_port yyy` with an availabe port number `yyy` (the URL will be [http://localhost:yyy](http://localhost:yyy))
 
 ## Other troubles
 
