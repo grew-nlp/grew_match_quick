@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 import json
 import os
@@ -5,9 +7,9 @@ import subprocess
 
 parser = argparse.ArgumentParser(description="Start locally a grew_match instance")
 parser.add_argument("data", help="The data to serve in the interface [see DOC...] TODO: more doc of this JSON https://grew.fr/usage/input/]")
-parser.add_argument("--back_port", help="PORT number for the backend server", type=int, default=8899)
-parser.add_argument("--front_port", help="PORT number for the frontend server", type=int, default=8000)
-parser.add_argument("--grew_match_back", help="path to the grew_match_back code")
+parser.add_argument("--backend_port", help="PORT number for the backend server", type=int, default=8899)
+parser.add_argument("--frontend_port", help="PORT number for the frontend server", type=int, default=8000)
+parser.add_argument("--config", help='describe the type of corpus: can be "ud" or "sud"', default="ud")
 args = parser.parse_args()
 
 cwd = os.getcwd()
@@ -35,38 +37,61 @@ full_gmb = os.path.abspath("local_files/grew_match_back")
 
 # -------------------------------------------------------------------------------------------------
 # Check the avaibility of the back port
-pid_on_back_port = subprocess.run(['lsof', '-t', '-i', f':{args.back_port}'], stdout=subprocess.PIPE)
-if len(pid_on_back_port.stdout) > 0:
-  raise ValueError (f'The port {args.back_port} for backend is already used, you can change if with --back_port option')
+pid_on_backend_port = subprocess.run(['lsof', '-t', '-i', f':{args.backend_port}'], stdout=subprocess.PIPE)
+if len(pid_on_backend_port.stdout) > 0:
+  raise ValueError (f'The port {args.backend_port} for backend is already used, you can change it with --backend_port option')
 
 # -------------------------------------------------------------------------------------------------
 # Check the avaibility of the front port
-pid_on_front_port = subprocess.run(['lsof', '-t', '-i', f':{args.front_port}'], stdout=subprocess.PIPE)
-if len(pid_on_front_port.stdout) > 0:
-  raise ValueError (f'The port {args.front_port} for frontend is already used, you can change if with --front_port option')
+pid_on_frontend_port = subprocess.run(['lsof', '-t', '-i', f':{args.frontend_port}'], stdout=subprocess.PIPE)
+if len(pid_on_frontend_port.stdout) > 0:
+  raise ValueError (f'The port {args.frontend_port} for frontend is already used, you can change it with --frontend_port option')
 
 # -------------------------------------------------------------------------------------------------
 # load the data (corpus or corpora)
 if os.path.isdir(args.data):
-  config = {} # TODO
+  # if the data is a folder: one corpus with folder name as id and config from CLI argument
+  corpora_list = [{
+    "id": os.path.basename(args.data),
+    "config": args.config,
+    "snippets": args.config,
+    "directory": os.path.abspath(args.data)}]
 else:
   with open(args.data, 'r') as f:
-    data = json.load(f)
-  # build a local "config.json" file for front config
-  config = {
-    'backend_server': f'http://localhost:{args.back_port}/',
-    'groups': [{ 'id': 'local', 'name': 'local', 'corpora': [data] }]
-  }
+    json_data = json.load(f)
+  if "corpora" in json_data:
+    # the JSON file describes a set of corpora
+    corpora_list = json_data["corpora"]
+  else:
+    # the JSON file describes one corpus
+    corpora_list = [json_data]
+
+
+gm_config = {
+  'backend_server': f'http://localhost:{args.backend_port}/',
+  'groups': [
+    { 'id': 'local',
+      'name': 'local',
+      'style': 'single' if len(corpora_list) == 1 else 'dropdown',
+      'corpora': corpora_list,
+  }]
+}
 
 with open('local_files/grew_match/config.json', 'w') as outfile:
-    json.dump(config, outfile, indent=2)
-
+    json.dump(gm_config, outfile, indent=2)
 
 with open('local_files/corpora/local.json', 'w') as outfile:
-  json.dump({ "corpora": [data] }, outfile, indent=2)
+  json.dump({ "corpora": corpora_list }, outfile, indent=2)
+
+
+
+
 
 # compile
-compile_output = subprocess.run(['grew', 'compile', '-i', f'local_files/corpora/local.json'], stdout=subprocess.PIPE)
+if args.config == "sud":
+  compile_output = subprocess.run(['grew', 'compile', '-config', 'sud', '-i', f'local_files/corpora/local.json'], stdout=subprocess.PIPE)
+else:
+  compile_output = subprocess.run(['grew', 'compile', '-i', f'local_files/corpora/local.json'], stdout=subprocess.PIPE)
 
 # build the file "gmb.conf.in" in the "grew_match_back" folder
 with open(f"{full_gmb}/gmb.conf.in__TEMPLATE", "r", encoding="utf-8") as input_file:
@@ -82,7 +107,7 @@ with open(f"{full_gmb}/gmb.conf.in__TEMPLATE", "r", encoding="utf-8") as input_f
 with open(f"{full_gmb}/Makefile.options__TEMPLATE", "r", encoding="utf-8") as input_file:
   with open(f"{full_gmb}/Makefile.options", "w", encoding="utf-8") as output_file:
     for line in input_file:
-      line = line.replace('__PORT__', str(args.back_port))
+      line = line.replace('__PORT__', str(args.backend_port))
       output_file.write(line)
 
 # start the backend server
@@ -93,10 +118,10 @@ with open("local_files/log/backend.stdout", "w") as so:
 # start the backend server
 with open("local_files/log/frontend.stdout", "w") as so:
   with open("local_files/log/frontend.stderr", "w") as se:
-    p_front = subprocess.Popen(["python", "-m", "http.server", str(args.front_port)], cwd="local_files/grew_match", stdout=so, stderr=se)
+    p_front = subprocess.Popen(["python", "-m", "http.server", str(args.frontend_port)], cwd="local_files/grew_match", stdout=so, stderr=se)
 
 print ("****************************************")
-print (f" Grew_match is ready on http://localhost:{args.front_port}")
+print (f" Grew_match is ready on http://localhost:{args.frontend_port}")
 print ("****************************************")
 
 while True:
