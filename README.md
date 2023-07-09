@@ -1,4 +1,4 @@
-# **Grew-match-quick**
+# **Grew_match_quick**
 
 This repository contains a Python script which configures and starts a local Grew-match instance on a corpus or a list of corpora.
 
@@ -15,9 +15,9 @@ To run locally Grew-match you first need to:
    - `opam install ssl ocsipersist-dbm fileutils eliom dep2pictlib grew`
 
 
-# Running **Grew-match-quick**
+# Running **Grew_match_quick**
 
-There are three ways to start **Grew-match-quick**:
+There are three ways to start **Grew_match_quick**:
  - with a folder describing a corpus
  - with a JSON configuration file describing one corpus
  - with a JSON configuration file describing a list of corpora
@@ -33,7 +33,7 @@ The following commands are available:
 With the command:
 
 ```
-python3 start.py corpus_folder 
+python3 grew_match_quick.py corpus_folder 
 ```
 
 and if you are lucky, a local Grew-match is available on http://localhost:8000.
@@ -47,11 +47,11 @@ Add option `--rtl` for right-to-left languages.
 
 ### Example
 
-To start **Grew-match-quick** on a freshly cloned **UD_English-PUD**:
+To start **Grew_match_quick** on a freshly cloned **UD_English-PUD**:
 
 ```
 git clone https://github.com/UniversalDependencies/UD_English-PUD.git
-python3 start.py UD_English-PUD
+python3 grew_match_quick.py UD_English-PUD
 ```
 
 ## Starting with a JSON file describing one corpus
@@ -77,10 +77,10 @@ with the file `examles/SUD_English.json`:
 }
 ```
 
-The command below starts **Grew-match-quick** (the `--config` option is not needed as the config is given in the JSON description).
+The command below starts **Grew_match_quick** (the `--config` option is not needed as the config is given in the JSON description).
 
 ```
-python3 start.py ex.json
+python3 grew_match_quick.py ex.json
 ```
 
 ## Starting with a JSON file describing a list or corpora
@@ -105,7 +105,7 @@ In this case, a red button appears in the interface with a link to a file report
 For example, the folder `examples/UD_English-Error-PUD` contains 10 sentences with 3 errors
 
 ```
-python3 start.py examples/UD_English-Error-PUD
+python3 grew_match_quick.py examples/UD_English-Error-PUD
 ```
 start Grew-match with the 7 correct sentences and produced the log file at http://localhost:8000/meta/UD_English-Error-PUD.log with the following data:
 ```json
