@@ -22,16 +22,13 @@ There are three ways to start **Grew-match quick**:
 
 ### 1. With a folder
 
-Use one of the two commands:
-```
-./start.py corpus_folder
-```
-or
+With the command:
+
 ```
 python3 start.py corpus_folder 
 ```
 
-If you are lucky, a local Grew-match is available on http://localhost:8000.
+and if you are lucky, a local Grew-match is available on http://localhost:8000.
 
 The corpus contains the data from all the files with extention `.conll` or `.conllu` at the root of the folder (files in subfolders are not taken into account).
 
@@ -88,6 +85,23 @@ When running, the script will generated files:
 
 
 ## In case of troubles
+
+### Corrupted CoNLL data
+
+If some CoNLL files contains errors, the corresponding sentences are skipped and the corpus is build with other sentences.
+In this case, a red button appears in the interface with a link to a file reporting the errors.
+For example, the folder `examples/UD_English-Error-PUD` contains 10 sentences with 3 errors
+
+```
+python3 start.py examples/UD_English-Error-PUD
+```
+produced the log file at http://localhost:8000/meta/UD_English-Error-PUD.log with the following data:
+```json
+{"message":"Cannot parse id zz","file":"/Users/guillaum/gitlab/grew/grew_match_quick/examples/UD_English-Error-PUD/10_sentences.conllu","sent_id":"n01001011","line":14,"library":"Conll"}
+{"message":"Wrong number of fields: 9 instead of 10 expected","file":"/Users/guillaum/gitlab/grew/grew_match_quick/examples/UD_English-Error-PUD/10_sentences.conllu","sent_id":"n01003007","line":187,"library":"Conll"}
+{"sent_id":"n01003013","file":"/Users/guillaum/gitlab/grew/grew_match_quick/examples/UD_English-Error-PUD/10_sentences.conllu","message":"Unknown src identifier `17`","line":258,"library":"Conll"}
+```
+
 
 ### Already used PORT
 
