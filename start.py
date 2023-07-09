@@ -4,6 +4,18 @@ import argparse
 import json
 import os
 import subprocess
+import requests
+
+
+def compile(force=False):
+  # clean
+  if force:
+    subprocess.run(['grew', 'clean', '-i', 'local_files/corpora/local.json'])
+  # compile
+  compile_args = ['-grew_match_server', 'local_files/grew_match/meta', '-i', 'local_files/corpora/local.json']
+  if args.config == "sud":
+    compile_args += ['-config', 'sud']
+  subprocess.run(['grew', 'compile'] + compile_args)
 
 parser = argparse.ArgumentParser(description="Start locally a grew_match instance")
 parser.add_argument("data", help="The data to serve in the interface [see DOC...] TODO: more doc of this JSON https://grew.fr/usage/input/]")
@@ -86,15 +98,7 @@ with open('local_files/corpora/local.json', 'w') as outfile:
   json.dump({ "corpora": corpora_list }, outfile, indent=2)
 
 
-
-
-
-# compile
-compile_args = ['-grew_match_server', 'local_files/grew_match/meta', '-i', 'local_files/corpora/local.json']
-if args.config == "sud":
-  compile_args += ['-config', 'sud']
-
-compile_output = subprocess.run(['grew', 'compile'] + compile_args, stdout=subprocess.PIPE)
+compile()
 
 # build the file "gmb.conf.in" in the "grew_match_back" folder
 with open(f"{full_gmb}/gmb.conf.in__TEMPLATE", "r", encoding="utf-8") as input_file:
@@ -128,8 +132,16 @@ print (f" Grew_match is ready on http://localhost:{args.frontend_port}")
 print ("****************************************")
 
 while True:
-  data = input('Enter "stop" or `Ctrl-C` to stop the processes: ')
-  if data == "stop":
+  data = input('Enter: s: stop, r:recompile, f:force recompile. ')
+  if data in ["s", "S"]:
     p_back.terminate()
     p_front.terminate()
     exit (0)
+  elif data in ["r", "R"]:
+    compile()
+    requests.post(f'http://localhost:{args.backend_port}/refresh_all')
+  elif data in ["f", "F"]:
+    compile(True)
+    requests.post(f'http://localhost:{args.backend_port}/refresh_all')
+  else:
+    print (f'unknown command "f{data}"')
