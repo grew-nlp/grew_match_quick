@@ -100,14 +100,16 @@ When running, the script will generated files:
 
 ## Corrupted CoNLL data
 
-If some CoNLL files contains errors, the corresponding sentences are skipped and the corpus is build with other sentences.
+If some CoNLL files contain errors, the corresponding sentences are skipped and the corpus is built without corrupted sentences.
 In this case, a red button appears in the interface with a link to a file reporting the errors.
-For example, the folder `examples/UD_English-Error-PUD` contains 10 sentences with 3 errors
+For example, the folder `examples/UD_English-Error-PUD` contains 10 sentences with 3 errors.
 
 ```
 python3 grew_match_quick.py examples/UD_English-Error-PUD
 ```
-start Grew-match with the 7 correct sentences and produced the log file at http://localhost:8000/meta/UD_English-Error-PUD.log with the following data:
+
+starts Grew-match with the 7 correct sentences and produces a log file at http://localhost:8000/meta/UD_English-Error-PUD.log with the following data:
+
 ```json
 {"message":"Cannot parse id zz","file":"/Users/guillaum/gitlab/grew/grew_match_quick/examples/UD_English-Error-PUD/10_sentences.conllu","sent_id":"n01001011","line":14,"library":"Conll"}
 {"message":"Wrong number of fields: 9 instead of 10 expected","file":"/Users/guillaum/gitlab/grew/grew_match_quick/examples/UD_English-Error-PUD/10_sentences.conllu","sent_id":"n01003007","line":187,"library":"Conll"}
