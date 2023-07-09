@@ -2,8 +2,6 @@
 
 This repository contains a Python script which configures and starts a local Grew-match instance on a corpus or a list of corpora.
 
----
-
 ## Prerequisite
 
 To run locally Grew-match you first need to:
@@ -33,9 +31,9 @@ or
 python3 start.py corpus_folder 
 ```
 
-If you are lucky, a local Grew-match is available on http://localhost:8080.
+If you are lucky, a local Grew-match is available on http://localhost:8000.
 
-The corpus contains the data from all the files with extention `.conll` or `.conllu` at the root of the folder (files in subfolder are not taken into account).
+The corpus contains the data from all the files with extention `.conll` or `.conllu` at the root of the folder (files in subfolders are not taken into account).
 
 By default the corpus is considered to be UD data (for the snippets and the Grew handling of edge labels).
 The option `--config=sud` shoud be added for SUD data.
@@ -73,7 +71,7 @@ with a file `ex.json`:
 The command below starts **Grew-match quick** (the `--config` option is not needed as the config is given in the JSON description).
 
 ```
-python3 start.py UD_English-PUD
+python3 start.py ex.json
 ```
 
 ### 3. with a JSON file describing a list or corpora
@@ -82,9 +80,8 @@ The expected JSON file must contains an object with the `corpora` key associated
 
 See file [ud_2.12.json](https://gitlab.inria.fr/grew/grew_match_config/-/blob/master/corpora/ud_2.12.json) in the online Grew-match config for an example.
 
----
 
-## possible troubles
+## In case of troubles
 
 ### Already used PORT
 
@@ -95,4 +92,4 @@ The application uses two ports, one for the frontend (`8000` by default) and one
 ### Other troubles
 
 If the script does not work as expected, you can have a look at files in `local_files/log`, mainly `backend.stderr` and `frontend.stderr` which contains the stderr of the two subprocesses.
-If this does not solve the issue, please report your problem [here](https://github.com/grew-nlp/grew_match_quick/issues) (please join the file `local_files/log/backend.stderr` to make debugging easier).
+If this does not solve the issue, report your problem [here](https://github.com/grew-nlp/grew_match_quick/issues) (please join the file `local_files/log/backend.stderr` to make debugging easier).
