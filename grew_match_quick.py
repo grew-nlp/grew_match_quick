@@ -6,13 +6,15 @@ import os
 import subprocess
 import requests
 
+# swd = script working directory
+swd = os.path.dirname(os.path.realpath(__file__))
 
 def compile(force=False):
   # clean
   if force:
-    subprocess.run(['grew', 'clean', '-i', 'local_files/corpora/local.json'])
+    subprocess.run(['grew', 'clean', '-i', f'{swd}/local_files/corpora/local.json'])
   # compile
-  compile_args = ['-grew_match_server', 'local_files/grew_match/meta', '-i', 'local_files/corpora/local.json']
+  compile_args = ['-grew_match_server', f'{swd}/local_files/grew_match/meta', '-i', f'{swd}/local_files/corpora/local.json']
   if args.config == "sud":
     compile_args += ['-config', 'sud']
   subprocess.run(['grew', 'compile'] + compile_args)
@@ -25,30 +27,31 @@ parser.add_argument("--config", help='describe the type of corpus: can be "ud" o
 parser.add_argument('--rtl', help="right_to_left script", action='store_true')
 args = parser.parse_args()
 
+
 cwd = os.getcwd()
 
 # -------------------------------------------------------------------------------------------------
 # Build a local folder for storage if needed
-os.makedirs('local_files', exist_ok=True)
-os.makedirs('local_files/corpora', exist_ok=True)
-os.makedirs('local_files/log', exist_ok=True)
+os.makedirs(f'{swd}/local_files', exist_ok=True)
+os.makedirs(f'{swd}/local_files/corpora', exist_ok=True)
+os.makedirs(f'{swd}/local_files/log', exist_ok=True)
 
 # -------------------------------------------------------------------------------------------------
 # clone or update "grew_match"
-if os.path.isdir("local_files/grew_match"):
-  subprocess.run(['git', 'pull'], cwd="local_files/grew_match")
+if os.path.isdir(f"{swd}/local_files/grew_match"):
+  subprocess.run(['git', 'pull'], cwd=f"{swd}/local_files/grew_match")
 else:
-  subprocess.run(['git', 'clone', 'https://gitlab.inria.fr/grew/grew_match.git'], cwd="local_files")
-os.makedirs('local_files/grew_match/meta', exist_ok=True)
+  subprocess.run(['git', 'clone', 'https://gitlab.inria.fr/grew/grew_match.git'], cwd=f"{swd}/local_files")
+os.makedirs(f'{swd}/local_files/grew_match/meta', exist_ok=True)
 
 # -------------------------------------------------------------------------------------------------
 # clone or update "grew_match_back"
-if os.path.isdir("local_files/grew_match_back"):
-  subprocess.run(['git', 'pull'], cwd="local_files/grew_match_back")
+if os.path.isdir(f"{swd}/local_files/grew_match_back"):
+  subprocess.run(['git', 'pull'], cwd=f"{swd}/local_files/grew_match_back")
 else:
-  subprocess.run(['git', 'clone', 'https://gitlab.inria.fr/grew/grew_match_back.git'], cwd="local_files")
-full_gmb = os.path.abspath("local_files/grew_match_back")
-os.makedirs('local_files/grew_match_back/static/shorten', exist_ok=True)
+  subprocess.run(['git', 'clone', 'https://gitlab.inria.fr/grew/grew_match_back.git'], cwd=f"{swd}/local_files")
+full_gmb = f"{swd}/local_files/grew_match_back"
+os.makedirs(f'{swd}/local_files/grew_match_back/static/shorten', exist_ok=True)
 
 # -------------------------------------------------------------------------------------------------
 # Check the avaibility of the back port
@@ -92,10 +95,10 @@ gm_config = {
   }]
 }
 
-with open('local_files/grew_match/config.json', 'w') as outfile:
+with open(f'{swd}/local_files/grew_match/config.json', 'w') as outfile:
     json.dump(gm_config, outfile, indent=2)
 
-with open('local_files/corpora/local.json', 'w') as outfile:
+with open(f'{swd}/local_files/corpora/local.json', 'w') as outfile:
   json.dump({ "corpora": corpora_list }, outfile, indent=2)
 
 
@@ -105,9 +108,9 @@ compile()
 with open(f"{full_gmb}/gmb.conf.in__TEMPLATE", "r", encoding="utf-8") as input_file:
   with open(f"{full_gmb}/gmb.conf.in", "w", encoding="utf-8") as output_file:
     for line in input_file:
-      line = line.replace('__LOG__', f'{cwd}/local_files/log')
-      line = line.replace('__CONFIG__', f'{cwd}/local_files/grew_match/config.json')
-      line = line.replace('__CORPORA__', f'{cwd}/local_files/corpora/')
+      line = line.replace('__LOG__', f'{swd}/local_files/log')
+      line = line.replace('__CONFIG__', f'{swd}/local_files/grew_match/config.json')
+      line = line.replace('__CORPORA__', f'{swd}/local_files/corpora/')
       line = line.replace('__EXTERN__', f'{full_gmb}/static/')
       output_file.write(line)
 
@@ -119,14 +122,14 @@ with open(f"{full_gmb}/Makefile.options__TEMPLATE", "r", encoding="utf-8") as in
       output_file.write(line)
 
 # start the backend server
-with open("local_files/log/backend.stdout", "w") as so:
-  with open("local_files/log/backend.stderr", "w") as se:
+with open(f"{swd}/local_files/log/backend.stdout", "w") as so:
+  with open(f"{swd}/local_files/log/backend.stderr", "w") as se:
     p_back = subprocess.Popen(["make", "test.opt"], cwd=full_gmb, stdout=so, stderr=se)
 
 # start the backend server
-with open("local_files/log/frontend.stdout", "w") as so:
-  with open("local_files/log/frontend.stderr", "w") as se:
-    p_front = subprocess.Popen(["python", "-m", "http.server", str(args.frontend_port)], cwd="local_files/grew_match", stdout=so, stderr=se)
+with open(f"{swd}/local_files/log/frontend.stdout", "w") as so:
+  with open(f"{swd}/local_files/log/frontend.stderr", "w") as se:
+    p_front = subprocess.Popen(["python", "-m", "http.server", str(args.frontend_port)], cwd=f"{swd}/local_files/grew_match", stdout=so, stderr=se)
 
 print ("****************************************")
 print (f" Grew_match is ready on http://localhost:{args.frontend_port}")
