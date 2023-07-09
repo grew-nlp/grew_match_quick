@@ -26,6 +26,7 @@ if os.path.isdir("local_files/grew_match"):
   subprocess.run(['git', 'pull'], cwd="local_files/grew_match")
 else:
   subprocess.run(['git', 'clone', 'https://gitlab.inria.fr/grew/grew_match.git'], cwd="local_files")
+os.makedirs('local_files/grew_match/meta', exist_ok=True)
 
 # -------------------------------------------------------------------------------------------------
 # clone or update "grew_match_back"
@@ -89,10 +90,11 @@ with open('local_files/corpora/local.json', 'w') as outfile:
 
 
 # compile
+compile_args = ['-grew_match_server', 'local_files/grew_match/meta', '-i', 'local_files/corpora/local.json']
 if args.config == "sud":
-  compile_output = subprocess.run(['grew', 'compile', '-config', 'sud', '-i', f'local_files/corpora/local.json'], stdout=subprocess.PIPE)
-else:
-  compile_output = subprocess.run(['grew', 'compile', '-i', f'local_files/corpora/local.json'], stdout=subprocess.PIPE)
+  compile_args += ['-config', 'sud']
+
+compile_output = subprocess.run(['grew', 'compile'] + compile_args, stdout=subprocess.PIPE)
 
 # build the file "gmb.conf.in" in the "grew_match_back" folder
 with open(f"{full_gmb}/gmb.conf.in__TEMPLATE", "r", encoding="utf-8") as input_file:
