@@ -94,6 +94,7 @@ gm_config = {
   'groups': [
     { 'id': 'local',
       'name': 'local',
+      'mode': 'syntax',
       'style': 'single' if len(corpora_list) == 1 else 'dropdown',
       'corpora': corpora_list
   }]
