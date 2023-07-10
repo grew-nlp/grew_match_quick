@@ -116,7 +116,6 @@ starts Grew-match with the 7 correct sentences and produces a log file at http:/
 {"sent_id":"n01003013","file":"/Users/guillaum/gitlab/grew/grew_match_quick/examples/UD_English-Error-PUD/10_sentences.conllu","message":"Unknown src identifier `17`","line":258,"library":"Conll"}
 ```
 
-
 ## Already used PORT
 
 The application uses two ports, one for the frontend (`8000` by default) and one for the backend (`8899` by default).
@@ -126,5 +125,8 @@ If one of these ports is already used, the script will fail. In this case, you s
 
 ## Other troubles
 
-If the script does not work as expected, you can have a look at files in `local_files/log`, mainly `backend.stderr` and `frontend.stderr` which contains the stderr of the two subprocesses.
+ - Try to add the option `--hard`, it will recompile the backend from scratch
+ - :warning: stronger solution which erases saved patterns: `rm -rf local_files` and try again.
+
+If the script does not work as expected, you can have a look at files in `local_files/log`, mainly `backend.stderr` and `frontend.stderr` which contains the `stderr` of the two subprocesses.
 If this does not solve the issue, report your problem [here](https://github.com/grew-nlp/grew_match_quick/issues) (please join the file `local_files/log/backend.stderr` to make debugging easier).

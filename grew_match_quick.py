@@ -20,13 +20,13 @@ def compile(force=False):
   subprocess.run(['grew', 'compile'] + compile_args)
 
 parser = argparse.ArgumentParser(description="Start locally a grew_match instance")
-parser.add_argument("data", help="The data to serve in the interface [see DOC...] TODO: more doc of this JSON https://grew.fr/usage/input/]")
+parser.add_argument("data", help="The data to serve in the interface (see https://github.com/grew-nlp/grew_match_quick#running-grew_match_quick for format)")
 parser.add_argument("--backend_port", help="PORT number for the backend server", type=int, default=8899)
 parser.add_argument("--frontend_port", help="PORT number for the frontend server", type=int, default=8000)
 parser.add_argument("--config", help='describe the type of corpus: can be "ud" or "sud"', default="ud")
 parser.add_argument('--rtl', help="right_to_left script", action='store_true')
+parser.add_argument('--hard', help="hard restart (in case of problem)", action='store_true')
 args = parser.parse_args()
-
 
 cwd = os.getcwd()
 
@@ -50,6 +50,10 @@ if os.path.isdir(f"{swd}/local_files/grew_match_back"):
   subprocess.run(['git', 'pull'], cwd=f"{swd}/local_files/grew_match_back")
 else:
   subprocess.run(['git', 'clone', 'https://gitlab.inria.fr/grew/grew_match_back.git'], cwd=f"{swd}/local_files")
+if args.hard:
+  subprocess.run(['rm', '-rf', '_deps'], cwd=f"{swd}/local_files/grew_match_back")
+  subprocess.run(['make', 'clean'], cwd=f"{swd}/local_files/grew_match_back")
+
 full_gmb = f"{swd}/local_files/grew_match_back"
 os.makedirs(f'{swd}/local_files/grew_match_back/static/shorten', exist_ok=True)
 
@@ -148,4 +152,4 @@ while True:
     compile(True)
     requests.post(f'http://localhost:{args.backend_port}/refresh_all')
   else:
-    print (f'unknown command "f{data}"')
+    print (f'unknown command "{data}"')
