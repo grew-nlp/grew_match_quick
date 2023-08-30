@@ -83,7 +83,7 @@ The command below starts **Grew_match_quick** (the `--config` option is not need
 python3 grew_match_quick.py ex.json
 ```
 
-## Starting with a JSON file describing a list or corpora
+## Starting with a JSON file describing a list of corpora
 
 The expected JSON file must contain an object with the `corpora` key associated to a list of corpus, each one described as above.
 
@@ -100,7 +100,7 @@ When running, the script will generated files:
 
 ## Corrupted CoNLL data
 
-If some CoNLL files contain errors, the corresponding sentences are skipped and the corpus is built without corrupted sentences.
+If some CoNLL files contain errors, the corresponding sentences are skipped and the corpus is built without the corrupted sentences.
 In this case, a red button appears in the interface with a link to a file reporting the errors.
 For example, the folder `examples/UD_English-Error-PUD` contains 10 sentences with 3 errors.
 
