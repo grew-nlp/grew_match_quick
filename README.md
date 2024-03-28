@@ -1,19 +1,16 @@
 # **Grew_match_quick**
 
-This repository contains a Python script which configures and starts a local Grew-match instance on a corpus or a list of corpora.
+This repository contains a Python script which configures and starts a local **Grew-match** instance on a corpus or a list of corpora.
 
 ---
 
 # Prerequisite
 
-To run locally Grew-match you first need to:
+To run locally **Grew-match** you first need to:
 
  - install Ocaml & opam: see steps 1 and 2 on [Grew install page](https://grew.fr/usage/install)
- - ⚠️ only for Mac (see [#16](https://github.com/ocaml/dbm/pull/16)): 
-   - `opam pin dbm https://github.com/ocaml/dbm.git#master`
  - install needed opam packages:
    - `opam install ssl ocsipersist-dbm fileutils eliom dep2pictlib grew`
-
 
 # Running **Grew_match_quick**
 
@@ -67,34 +64,33 @@ Other optional keys are:
 
 ### Example
 
-with the file `examles/SUD_English.json`:
+with the file `examles/UD_English-ParTUT.json`:
 
 ```json
 {
-  "id": "SUD_English-PUD",
-  "config": "sud",
-  "directory": "/Users/guillaum/github/bguil/SUD_English-PUD"
+  "id": "UD_English-ParTUT",
+  "config": "ud",
+  "directory": "/Users/guillaum/resources/ud-treebanks-v2.13/UD_English-ParTUT"
 }
 ```
 
 The command below starts **Grew_match_quick** (the `--config` option is not needed as the config is given in the JSON description).
 
 ```
-python3 grew_match_quick.py ex.json
+python3 grew_match_quick.py examles/UD_English-ParTUT.json
 ```
 
 ## Starting with a JSON file describing a list of corpora
 
-The expected JSON file must contain an object with the `corpora` key associated to a list of corpus, each one described as above.
+The expected JSON file must list of corpus, each one described as above.
 
-See file [ud_2.12.json](https://gitlab.inria.fr/grew/grew_match_config/-/blob/master/corpora/ud_2.12.json) in the online Grew-match config for an example.
+See file [UD_2.13.json](https://github.com/grew-nlp/corpusbank/blob/main/UD_2.13.json) in the online Grew-match config for an example.
 
 # Generated files
 
 When running, the script will generated files:
- - in each corpus used, a compiled version of the corpus is stored (a file with `.marshal` extension). These kind of files can be removed, they will be generated again later when needed.
+ - in each corpus used, a directory `_build_grew` is created, it contains all generated files associated with the corpus. This directory can be removed, generated files will be built again later when needed.
  - in a local folder named `local_files`. This folder will be rebuild if needed for future usage, it can be safely removed except if you use the "Save" feature, removing `local_files` will also remove saved requests.
-
 
 # In case of troubles
 

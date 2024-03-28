@@ -2,22 +2,10 @@
 
 import argparse
 import json
+import time
 import os
 import subprocess
 import requests
-
-# swd = script working directory
-swd = os.path.dirname(os.path.realpath(__file__))
-
-def compile(force=False):
-  # clean
-  if force:
-    subprocess.run(['grew', 'clean', '-i', f'{swd}/local_files/corpora/local.json'])
-  # compile
-  compile_args = ['-grew_match_server', f'{swd}/local_files/grew_match/meta', '-i', f'{swd}/local_files/corpora/local.json']
-  if args.config == "sud":
-    compile_args += ['-config', 'sud']
-  subprocess.run(['grew', 'compile'] + compile_args)
 
 parser = argparse.ArgumentParser(description="Start locally a grew_match instance")
 parser.add_argument("data", help="The data to serve in the interface (see https://github.com/grew-nlp/grew_match_quick#running-grew_match_quick for format)")
@@ -26,36 +14,57 @@ parser.add_argument("--frontend_port", help="PORT number for the frontend server
 parser.add_argument("--config", help='describe the type of corpus: can be "ud" or "sud"', default="ud")
 parser.add_argument('--rtl', help="right_to_left script", action='store_true')
 parser.add_argument('--hard', help="hard restart (in case of problem)", action='store_true')
+parser.add_argument("--RESOURCES", help='define env var if needed in data definition', default = os.getenv ("RESOURCES"))
+parser.add_argument("--GRSROOT", help='define env var if needed in data definition', default = os.getenv ("GRSROOT"))
 args = parser.parse_args()
 
-cwd = os.getcwd()
+# swd = script working directory
+swd = os.path.dirname(os.path.realpath(__file__))
+
+def compile(force=False):
+  # clean
+  if force:
+    subprocess.run(['grew_dev', 'clean', '-corpusbank', f'{swd}/local_files/corpusbank'])
+  # compile
+  compile_args = [ '-corpusbank', f'{swd}/local_files/corpusbank' ]
+  if args.config == "sud":
+    compile_args += ['-config', 'sud']
+  subprocess.run(['grew_dev', 'compile'] + compile_args)
+
 
 # -------------------------------------------------------------------------------------------------
-# Build a local folder for storage if needed
+# Build local folders for storage if needed
 os.makedirs(f'{swd}/local_files', exist_ok=True)
-os.makedirs(f'{swd}/local_files/corpora', exist_ok=True)
+os.makedirs(f'{swd}/local_files/corpusbank', exist_ok=True)
 os.makedirs(f'{swd}/local_files/log', exist_ok=True)
 
 # -------------------------------------------------------------------------------------------------
 # clone or update "grew_match"
 if os.path.isdir(f"{swd}/local_files/grew_match"):
   subprocess.run(['git', 'pull'], cwd=f"{swd}/local_files/grew_match")
+  subprocess.run(['git', 'checkout', 'corpusbank'], cwd=f"{swd}/local_files/grew_match")
 else:
   subprocess.run(['git', 'clone', 'https://gitlab.inria.fr/grew/grew_match.git'], cwd=f"{swd}/local_files")
+  subprocess.run(['git', 'checkout', 'corpusbank'], cwd=f"{swd}/local_files/grew_match")
 os.makedirs(f'{swd}/local_files/grew_match/meta', exist_ok=True)
+
 
 # -------------------------------------------------------------------------------------------------
 # clone or update "grew_match_back"
-if os.path.isdir(f"{swd}/local_files/grew_match_back"):
-  subprocess.run(['git', 'pull'], cwd=f"{swd}/local_files/grew_match_back")
+full_gmb = f"{swd}/local_files/grew_match_back"
+
+if os.path.isdir(f"{full_gmb}"):
+  subprocess.run(['git', 'pull'], cwd=f"{full_gmb}")
+  subprocess.run(['git', 'checkout', 'corpusbank'], cwd=f"{full_gmb}")
+
 else:
   subprocess.run(['git', 'clone', 'https://gitlab.inria.fr/grew/grew_match_back.git'], cwd=f"{swd}/local_files")
+  subprocess.run(['git', 'checkout', 'corpusbank'], cwd=f"{full_gmb}")
 if args.hard:
-  subprocess.run(['rm', '-rf', '_deps'], cwd=f"{swd}/local_files/grew_match_back")
-  subprocess.run(['make', 'clean'], cwd=f"{swd}/local_files/grew_match_back")
+  subprocess.run(['rm', '-rf', '_deps'], cwd=f"{full_gmb}")
+  subprocess.run(['make', 'clean'], cwd=f"{full_gmb}")
 
-full_gmb = f"{swd}/local_files/grew_match_back"
-os.makedirs(f'{swd}/local_files/grew_match_back/static/shorten', exist_ok=True)
+os.makedirs(f'{full_gmb}/static/shorten', exist_ok=True)
 
 # -------------------------------------------------------------------------------------------------
 # Check the avaibility of the back port
@@ -80,32 +89,32 @@ if os.path.isdir(args.data):
     "directory": os.path.abspath(args.data)}]
 else:
   with open(args.data, 'r') as f:
-    json_data = json.load(f)
-  if "corpora" in json_data:
-    # the JSON file describes a set of corpora
-    corpora_list = json_data["corpora"]
-  else:
-    # the JSON file describes one corpus
-    corpora_list = [json_data]
+    desc = json.load (f)
+    if isinstance(desc, dict):
+      corpora_list = [desc]
+    else:
+      corpora_list = desc
 
+with open(f'{swd}/local_files/corpusbank/gmq_corpora.json', 'w') as outfile:
+    json.dump(corpora_list, outfile, indent=2)
 
-gm_config = {
-  'backend_server': f'http://localhost:{args.backend_port}/',
-  'groups': [
-    { 'id': 'local',
-      'name': 'local',
-      'mode': 'syntax',
-      'style': 'single' if len(corpora_list) == 1 else 'dropdown',
-      'corpora': corpora_list
-  }]
+instances = { 
+  f"localhost:{args.frontend_port}": { 
+    "backend": f"http://localhost:{args.backend_port}/",
+    "instance": "gmq_instance.json"
+  }
 }
+with open(f'{swd}/local_files/grew_match/instances.json', 'w') as outfile:
+    json.dump(instances, outfile, indent=2)
 
-with open(f'{swd}/local_files/grew_match/config.json', 'w') as outfile:
-    json.dump(gm_config, outfile, indent=2)
-
-with open(f'{swd}/local_files/corpora/local.json', 'w') as outfile:
-  json.dump({ "corpora": corpora_list }, outfile, indent=2)
-
+instance = [{
+    "id": "Grew_match_quick",
+    "mode": "syntax",
+    "style": "dropdown",
+    "corpora": [ cd["id"] for cd in corpora_list]
+  }]
+with open(f'{swd}/local_files/grew_match/instances/gmq_instance.json', 'w') as outfile:
+    json.dump(instance, outfile, indent=2)
 
 compile()
 
@@ -114,31 +123,45 @@ with open(f"{full_gmb}/gmb.conf.in__TEMPLATE", "r", encoding="utf-8") as input_f
   with open(f"{full_gmb}/gmb.conf.in", "w", encoding="utf-8") as output_file:
     for line in input_file:
       line = line.replace('__LOG__', f'{swd}/local_files/log')
-      line = line.replace('__CONFIG__', f'{swd}/local_files/grew_match/config.json')
-      line = line.replace('__CORPORA__', f'{swd}/local_files/corpora/')
-      line = line.replace('__EXTERN__', f'{full_gmb}/static/')
+      line = line.replace('__CORPUSBANK__', f'{swd}/local_files/corpusbank/')
+      line = line.replace('__RESOURCES__', args.RESOURCES)
+      line = line.replace('__GRSROOT__', args.GRSROOT)
+      line = line.replace('__STORAGE__', f'{full_gmb}/static/')
       output_file.write(line)
 
-# build the file "Makefile.options" in the "grew_match_back" folder
-with open(f"{full_gmb}/Makefile.options__TEMPLATE", "r", encoding="utf-8") as input_file:
-  with open(f"{full_gmb}/Makefile.options", "w", encoding="utf-8") as output_file:
-    for line in input_file:
-      line = line.replace('__PORT__', str(args.backend_port))
-      output_file.write(line)
 
 # start the backend server
 with open(f"{swd}/local_files/log/backend.stdout", "w") as so:
   with open(f"{swd}/local_files/log/backend.stderr", "w") as se:
-    p_back = subprocess.Popen(["make", "test.opt"], cwd=full_gmb, stdout=so, stderr=se)
+    p_back = subprocess.Popen(["make", "test.opt", f"GMB_PORT={args.backend_port}"], cwd=full_gmb, stdout=so, stderr=se)
 
 # start the backend server
 with open(f"{swd}/local_files/log/frontend.stdout", "w") as so:
   with open(f"{swd}/local_files/log/frontend.stderr", "w") as se:
     p_front = subprocess.Popen(["python", "-m", "http.server", str(args.frontend_port)], cwd=f"{swd}/local_files/grew_match", stdout=so, stderr=se)
 
-print ("****************************************")
+cpt=0
+while True:
+  try:
+    cpt += 1
+    time.sleep(2)
+    print (f"[{cpt}] ping backend --> ", end='')
+    x = requests.post(f'http://localhost:{args.backend_port}/ping')
+    print ("OK", x)
+    break
+  except:
+    if cpt < 15:
+      print ("No response, wait…")
+    else:
+      print (f"ERROR: It seems that the backend cannot start properly, see error log in: {swd}/local_files/log/backend.stderr")
+      exit (2)
+
+
+
+
+print ("==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*")
 print (f" Grew_match is ready on http://localhost:{args.frontend_port}")
-print ("****************************************")
+print ("==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*")
 
 while True:
   data = input('Enter: s: stop, r:recompile, f:force recompile. ')
