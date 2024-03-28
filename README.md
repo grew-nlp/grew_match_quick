@@ -9,6 +9,9 @@ This repository contains a Python script which configures and starts a local **G
 To run locally **Grew-match** you first need to:
 
  - install Ocaml & opam: see steps 1 and 2 on [Grew install page](https://grew.fr/usage/install)
+ - tmp (the current version of Grew-match is in `corpusbank` branches)
+   - `opam pin git+https://github.com/grew-nlp/grewlib.git#corpusbank`
+   - `opam pin git+https://gitlab.inria.fr/grew/grew.git#corpusbank`
  - install needed opam packages:
    - `opam install ssl ocsipersist-dbm fileutils eliom dep2pictlib grew`
 

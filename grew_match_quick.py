@@ -84,6 +84,7 @@ if os.path.isdir(args.data):
   # if the data is a folder: one corpus with folder name as id and config from CLI argument
   corpora_list = [{
     "id": os.path.basename(args.data),
+    "dynamic": True,
     "config": args.config,
     "rtl": args.rtl,
     "directory": os.path.abspath(args.data)}]
@@ -107,12 +108,21 @@ instances = {
 with open(f'{swd}/local_files/grew_match/instances.json', 'w') as outfile:
     json.dump(instances, outfile, indent=2)
 
-instance = [{
+if len (corpora_list) == 1:
+  instance = [{
     "id": "Grew_match_quick",
+    "mode": "syntax",
+    "style": "single",
+    "corpora": [ cd["id"] for cd in corpora_list]
+  }]
+else:
+  instance = [{
+    "id": f"{os.path.splitext(os.path.basename(args.data))[0]}",
     "mode": "syntax",
     "style": "dropdown",
     "corpora": [ cd["id"] for cd in corpora_list]
   }]
+
 with open(f'{swd}/local_files/grew_match/instances/gmq_instance.json', 'w') as outfile:
     json.dump(instance, outfile, indent=2)
 
