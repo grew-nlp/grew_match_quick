@@ -24,9 +24,9 @@ swd = os.path.dirname(os.path.realpath(__file__))
 def compile(force=False):
   # clean
   if force:
-    subprocess.run(['grew_dev', 'clean', '-corpusbank', f'{swd}/local_files/corpusbank'])
+    subprocess.run(['grew_dev', 'clean', '-CORPUSBANK', f'{swd}/local_files/corpusbank'])
   # compile
-  compile_args = [ '-corpusbank', f'{swd}/local_files/corpusbank' ]
+  compile_args = [ '-CORPUSBANK', f'{swd}/local_files/corpusbank' ]
   if args.config == "sud":
     compile_args += ['-config', 'sud']
   subprocess.run(['grew_dev', 'compile'] + compile_args)
