@@ -91,8 +91,8 @@ See file [ud_2.12.json](https://gitlab.inria.fr/grew/grew_match_config/-/blob/ma
 
 # Generated files
 
-When running, the script will generated files:
- - in each corpus used, a compiled version of the corpus is stored (a file with `.marshal` extension). These kind of files can be removed, they will be generated again later when needed.
+When running, the script will generate files:
+ - in the folder of each used corpus, some files are stored in e local folder names `_build_grew`. The files in this folder can be removed, they will be generated again later when needed.
  - in a local folder named `local_files`. This folder will be rebuild if needed for future usage, it can be safely removed except if you use the "Save" feature, removing `local_files` will also remove saved requests.
 
 
