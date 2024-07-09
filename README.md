@@ -92,7 +92,7 @@ See file [UD_2.13.json](https://github.com/grew-nlp/corpusbank/blob/main/UD_2.13
 # Generated files
 
 When running, the script will generated files:
- - in each corpus used, a directory `_build_grew` is created, it contains all generated files associated with the corpus. This directory can be removed, generated files will be built again later when needed.
+ - in the folder of each used corpus, some files are stored in e local folder names `_build_grew`. The files in this folder can be removed, they will be generated again later when needed.
  - in a local folder named `local_files`. This folder will be rebuild if needed for future usage, it can be safely removed except if you use the "Save" feature, removing `local_files` will also remove saved requests.
 
 # In case of troubles
