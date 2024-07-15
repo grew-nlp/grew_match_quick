@@ -42,10 +42,8 @@ os.makedirs(f'{swd}/local_files/log', exist_ok=True)
 # clone or update "grew_match"
 if os.path.isdir(f"{swd}/local_files/grew_match"):
   subprocess.run(['git', 'pull'], cwd=f"{swd}/local_files/grew_match")
-  subprocess.run(['git', 'checkout', 'corpusbank'], cwd=f"{swd}/local_files/grew_match")
 else:
   subprocess.run(['git', 'clone', 'https://gitlab.inria.fr/grew/grew_match.git'], cwd=f"{swd}/local_files")
-  subprocess.run(['git', 'checkout', 'corpusbank'], cwd=f"{swd}/local_files/grew_match")
 os.makedirs(f'{swd}/local_files/grew_match/meta', exist_ok=True)
 
 
@@ -55,11 +53,9 @@ full_gmb = f"{swd}/local_files/grew_match_back"
 
 if os.path.isdir(f"{full_gmb}"):
   subprocess.run(['git', 'pull'], cwd=f"{full_gmb}")
-  subprocess.run(['git', 'checkout', 'corpusbank'], cwd=f"{full_gmb}")
 
 else:
   subprocess.run(['git', 'clone', 'https://gitlab.inria.fr/grew/grew_match_back.git'], cwd=f"{swd}/local_files")
-  subprocess.run(['git', 'checkout', 'corpusbank'], cwd=f"{full_gmb}")
 if args.hard:
   subprocess.run(['rm', '-rf', '_deps'], cwd=f"{full_gmb}")
   subprocess.run(['make', 'clean'], cwd=f"{full_gmb}")
