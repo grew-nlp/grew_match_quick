@@ -21,6 +21,18 @@ args = parser.parse_args()
 # swd = script working directory
 swd = os.path.dirname(os.path.realpath(__file__))
 
+def get_python_command():
+  try:
+    subprocess.run(['python3', '--version'], capture_output = True, text = True)
+    return "python3"
+  except:
+    try:
+      subprocess.run(['python', '--version'], capture_output = True, text = True)
+      return "python"
+    except:
+      print ("ERROR: Cannot find then 'python' command")
+      exit (3)
+
 def compile(force=False):
   # clean
   if force:
@@ -30,7 +42,6 @@ def compile(force=False):
   if args.config == "sud":
     compile_args += ['-config', 'sud']
   subprocess.run(['grew', 'compile'] + compile_args)
-
 
 # -------------------------------------------------------------------------------------------------
 # Build local folders for storage if needed
@@ -144,9 +155,10 @@ with open(f"{swd}/local_files/log/backend.stdout", "w") as so:
     p_back = subprocess.Popen(["make", "test.opt", f"GMB_PORT={args.backend_port}"], cwd=full_gmb, stdout=so, stderr=se)
 
 # start the backend server
+python_command = get_python_command()
 with open(f"{swd}/local_files/log/frontend.stdout", "w") as so:
   with open(f"{swd}/local_files/log/frontend.stderr", "w") as se:
-    p_front = subprocess.Popen(["python", "-m", "http.server", str(args.frontend_port)], cwd=f"{swd}/local_files/grew_match", stdout=so, stderr=se)
+    p_front = subprocess.Popen([python_command, "-m", "http.server", str(args.frontend_port)], cwd=f"{swd}/local_files/grew_match", stdout=so, stderr=se)
 
 cpt=0
 while True:
