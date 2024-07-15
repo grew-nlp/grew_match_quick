@@ -130,8 +130,10 @@ with open(f"{full_gmb}/gmb.conf.in__TEMPLATE", "r", encoding="utf-8") as input_f
     for line in input_file:
       line = line.replace('__LOG__', f'{swd}/local_files/log')
       line = line.replace('__CORPUSBANK__', f'{swd}/local_files/corpusbank/')
-      line = line.replace('__RESOURCES__', args.RESOURCES)
-      line = line.replace('__GRSROOT__', args.GRSROOT)
+      if args.RESOURCES:
+        line = line.replace('__RESOURCES__', args.RESOURCES)
+      if args.GRSROOT:
+        line = line.replace('__GRSROOT__', args.GRSROOT)
       line = line.replace('__STORAGE__', f'{full_gmb}/static/')
       output_file.write(line)
 
