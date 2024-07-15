@@ -31,7 +31,7 @@ def get_python_command():
       return "python"
     except:
       print ("ERROR: Cannot find then 'python' command")
-      exit (3)
+      exit (1)
 
 def compile(force=False):
   # clean
@@ -95,13 +95,29 @@ if os.path.isdir(args.data):
     "config": args.config,
     "rtl": args.rtl,
     "directory": os.path.abspath(args.data)}]
-else:
+elif os.path.isfile (args.data) and args.data.endswith(".json"):
   with open(args.data, 'r') as f:
     desc = json.load (f)
     if isinstance(desc, dict):
       corpora_list = [desc]
     else:
       corpora_list = desc
+elif os.path.isfile (args.data) and (args.data.endswith(".conllu") or args.data.endswith(".conll")):
+  abs = os.path.abspath(args.data)
+  corpora_list = [{
+    "id": os.path.basename(abs),
+    "dynamic": True,
+    "config": args.config,
+    "rtl": args.rtl,
+    "directory": os.path.dirname(abs),
+    "files": [os.path.basename(abs)]
+  }]
+elif os.path.isfile (args.data):
+  print (f"ERROR: Don't know what to do with the file '{args.data}'")
+  exit (3)
+else:
+  print (f"ERROR: '{args.data}' is not a file or a folder")
+  exit (3)
 
 with open(f'{swd}/local_files/corpusbank/gmq_corpora.json', 'w') as outfile:
     json.dump(corpora_list, outfile, indent=2)

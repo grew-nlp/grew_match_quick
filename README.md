@@ -6,12 +6,9 @@ This repository contains a Python script which configures and starts a local **G
 
 # Prerequisite
 
-To run locally **Grew-match** you first need to:
+To run locally **Grew-match**, you first need to:
 
  - install Ocaml & opam: see steps 1 and 2 on [Grew install page](https://grew.fr/usage/install)
- - tmp (the current version of Grew-match is in `corpusbank` branches)
-   - `opam pin git+https://github.com/grew-nlp/grewlib.git#corpusbank`
-   - `opam pin git+https://gitlab.inria.fr/grew/grew.git#corpusbank`
  - install needed opam packages:
    - `opam install ssl ocsipersist-dbm fileutils eliom dep2pictlib grew`
 
@@ -26,14 +23,14 @@ Once everything is started, the script enters a loop with a prompt for the user.
 The following commands are available:
  - 's' to stop the script
  - 'r' to recompile the corpora (this will update the data if some corpus is modified)
- - 'f' to force recompile
+ - 'f' to force recompile all available corpora
 
 ## Starting with a folder
 
 With the command:
 
 ```
-python3 grew_match_quick.py corpus_folder 
+python3 grew_match_quick.py corpus_folder
 ```
 
 and if you are lucky, a local Grew-match is available on http://localhost:8000.
@@ -73,7 +70,7 @@ with the file `examles/UD_English-ParTUT.json`:
 {
   "id": "UD_English-ParTUT",
   "config": "ud",
-  "directory": "/Users/guillaum/resources/ud-treebanks-v2.13/UD_English-ParTUT"
+  "directory": "/Users/guillaum/resources/ud-treebanks-v2.14/UD_English-ParTUT"
 }
 ```
 
@@ -87,12 +84,13 @@ python3 grew_match_quick.py examles/UD_English-ParTUT.json
 
 The expected JSON file must list of corpus, each one described as above.
 
-See file [UD_2.13.json](https://github.com/grew-nlp/corpusbank/blob/main/UD_2.13.json) in the online Grew-match config for an example.
+See file [UD_2.14.json](https://github.com/grew-nlp/corpusbank/blob/main/UD_2.14.json) in the online Grew-match config for an example.
 
 # Generated files
 
 When running, the script will generated files:
- - in the folder of each used corpus, some files are stored in e local folder names `_build_grew`. The files in this folder can be removed, they will be generated again later when needed.
+ - for each corpus used, in the corresponding folder, a local folder named `_build_grew` is added and stores all needed files.
+ The files in this folder can be removed, they will be generated again later when needed.
  - in a local folder named `local_files`. This folder will be rebuild if needed for future usage, it can be safely removed except if you use the "Save" feature, removing `local_files` will also remove saved requests.
 
 # In case of troubles
