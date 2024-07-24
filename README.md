@@ -65,7 +65,7 @@ Other optional keys are:
 
 ### Example
 
-with the file `examles/UD_English-ParTUT.json`:
+with the file `examples/UD_English-ParTUT.json`:
 
 ```json
 {
@@ -78,7 +78,7 @@ with the file `examles/UD_English-ParTUT.json`:
 The command below starts **Grew_match_quick** (the `--config` option is not needed as the config is given in the JSON description).
 
 ```
-python3 grew_match_quick.py examles/UD_English-ParTUT.json
+python3 grew_match_quick.py examples/UD_English-ParTUT.json
 ```
 
 ## Starting with a JSON file describing a list of corpora
