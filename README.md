@@ -83,7 +83,7 @@ python3 grew_match_quick.py examples/UD_English-ParTUT.json
 
 ## Starting with a JSON file describing a list of corpora
 
-The expected JSON file must list of corpus, each one described as above.
+The expected JSON file should contain a list of corpus, each one described as above.
 
 See file [UD_2.14.json](https://github.com/grew-nlp/corpusbank/blob/main/UD_2.14.json) in the online Grew-match config for an example.
 
