@@ -10,6 +10,7 @@ To run locally **Grew-match**, you first need to:
 
  - install Ocaml & opam: see steps 1 and 2 on [Grew install page](https://grew.fr/usage/install)
  - install needed opam packages:
+   - `opam remote add grew "http://opam.grew.fr"`  
    - `opam install ssl ocsipersist-dbm fileutils eliom dep2pictlib grew`
 
 # Running **Grew_match_quick**
