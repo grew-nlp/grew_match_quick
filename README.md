@@ -8,12 +8,21 @@ This repository contains a Python script which configures and starts a local **G
 
 To run locally **Grew-match**, you first need to:
 
+ - install git: see [Git - Downloads](https://git-scm.com/downloads)
  - install Ocaml & opam: see steps 1 and 2 on [Grew install page](https://grew.fr/usage/install)
  - install needed opam packages:
    - `opam remote add grew "http://opam.grew.fr"`  
    - `opam install ssl ocsipersist-dbm fileutils eliom dep2pictlib grew`
 
-# Running **Grew_match_quick**
+# Get **Grew_match_quick**
+
+## First install
+Run `git clone https://github.com/grew-nlp/grew_match_quick.git`. It will create a local folder named `grew_match_quick`.
+
+## Later updates
+In the folder `grew_match_quick`, run `git pull`.
+
+# Run **Grew_match_quick**
 
 There are three ways to start **Grew_match_quick**:
  - with a folder describing a corpus
