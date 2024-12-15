@@ -1,56 +1,67 @@
-# **Grew_match_quick**
+# **Grew_match_quick** Documentation
 
-This repository contains a Python script which configures and starts a local **Grew-match** instance on a corpus or a list of corpora.
+## Overview
 
----
+The `grew_match_quick` repository contains a Python script that configures and starts a local instance of **Grew-match** on a specified corpus or a list of corpora.
 
-# Prerequisite
+# Prerequisites
 
-To run locally **Grew-match**, you first need to:
+Before running **Grew-match** locally, ensure you have the following installed:
 
- - install git: see [Git - Downloads](https://git-scm.com/downloads)
- - install Ocaml & opam: see steps 1 and 2 on [Grew install page](https://grew.fr/usage/install)
- - install needed opam packages:
+ - Git: [Git - Downloads](https://git-scm.com/downloads)
+ - Ocaml & OPAM: Follow steps 1 and 2 on the [Grew installation page](https://grew.fr/usage/install).
+ - Required OPAM Packages:
    - `opam remote add grew "http://opam.grew.fr"`  
-   - `opam install ssl ocsipersist-dbm fileutils eliom dep2pictlib grew`
+   - `opam install dream dep2pictlib grew`
 
-# Get **Grew_match_quick**
+# Getting Started with **Grew_match_quick**
 
-## First install
-Run `git clone https://github.com/grew-nlp/grew_match_quick.git`. It will create a local folder named `grew_match_quick`.
+## Initial Installation
 
-## Later updates
-In the folder `grew_match_quick`, run `git pull`.
+To clone the repository, run:
 
-# Run **Grew_match_quick**
+```
+git clone https://github.com/grew-nlp/grew_match_quick.git
+```
 
-There are three ways to start **Grew_match_quick**:
- - with a folder describing a corpus
- - with a JSON configuration file describing one corpus
- - with a JSON configuration file describing a list of corpora
+This command creates a local folder named `grew_match_quick`.
 
-Once everything is started, the script enters a loop with a prompt for the user.
-The following commands are available:
- - 's' to stop the script
- - 'r' to recompile the corpora (this will update the data if some corpus is modified)
- - 'f' to force recompile all available corpora
+## Updating the Repository
 
-## Starting with a folder
+To update your local repository with the latest changes, navigate to the `grew_match_quick` folder and run:
 
-With the command:
+```
+git pull
+```
+
+# Running **Grew_match_quick**
+
+You can start **Grew_match_quick** in three ways:
+ - Using a folder describing a corpus
+ - Using a JSON configuration file for a single corpus
+ - Using a JSON configuration file multiple corpora
+
+Once started, the script enters a loop with a prompt for the user commands. The available commands are:
+ - 's': Stop the script
+ - 'r': Recompile the corpora (updates data if any corpus has been modified)
+ - 'f': Force recompilation of all available corpora
+
+## Starting with a Folder
+
+To start **Grew-match** using a folder, run:
 
 ```
 python3 grew_match_quick.py corpus_folder
 ```
 
-and if you are lucky, a local Grew-match is available on http://localhost:8000.
+If successful, a local Grew-match instance will be available at http://localhost:8000.
 
-The corpus contains the data from all the files with extension `.conll` or `.conllu` at the root of the folder (files in subfolders are not taken into account).
+Note: The corpus should contain the data from all the files with extension `.conll` or `.conllu` at the root of the folder (files in subfolders are ignored).
 
-By default the corpus is considered to be UD data (for the snippets and the Grew handling of edge labels).
+By default the corpus is treated Universal Dependencies (UD) data (for the snippets and the Grew handling of edge labels).
 The option `--config=sud` should be added for SUD data.
 
-Add option `--rtl` for right-to-left languages.
+To specify right-to-left languages, add the --rtl option.
 
 ### Example
 
@@ -61,61 +72,58 @@ git clone https://github.com/UniversalDependencies/UD_English-PUD.git
 python3 grew_match_quick.py UD_English-PUD
 ```
 
-## Starting with a JSON file describing one corpus
+## Starting with a JSON File for One Corpus
 
 A corpus can be described by a JSON object with the following keys:
- - `id`: the identifier of the corpus (the name used in the interface and some URLs)
- - `directory`: the path of the directory where the corpus is stored (prefer absolute path rather than relative ones)
- - `config`: either `ud` or `sud`, indicates to Grew how edge labels should be handled
+ - `id`: Identifier of the corpus (used in the interface and URLs)
+ - `directory`: Path of the directory where the corpus is stored (prefer absolute path)
+ - `config`: Either `ud` or `sud`, indicating how edge labels should be handled
 
-Other optional keys are:
- - `rtl: true` for right-to-left languages
- - `audio: true` for data with alignement to an audio file
+Optional keys:
+ - `rtl`: Set to true for right-to-left languages
+ - `audio`: Set to true for data aligned with an audio file
 
 ### Example
 
-with the file `examples/UD_English-ParTUT.json`:
+Using the file `examples/UD_English-ParTUT.json`:
 
 ```json
 {
   "id": "UD_English-ParTUT",
   "config": "ud",
-  "directory": "/Users/guillaum/resources/ud-treebanks-v2.14/UD_English-ParTUT"
+  "directory": "/Users/guillaum/resources/ud-treebanks-v2.15/UD_English-ParTUT"
 }
 ```
 
-The command below starts **Grew_match_quick** (the `--config` option is not needed as the config is given in the JSON description).
+Run the following command to start Grew_match_quick:
 
 ```
 python3 grew_match_quick.py examples/UD_English-ParTUT.json
 ```
 
-## Starting with a JSON file describing a list of corpora
+## Starting with a JSON File for Multiple Corpora
 
-The expected JSON file should contain a list of corpus, each one described as above.
+To describe multiple corpora, the JSON file should contain a list of corpus objects, each formatted as described above. Refer to the file [UD_2.15.json](https://github.com/grew-nlp/corpusbank/blob/main/UD_2.15.json) in the online Grew-match configuration for an example.
 
-See file [UD_2.14.json](https://github.com/grew-nlp/corpusbank/blob/main/UD_2.14.json) in the online Grew-match config for an example.
+# Generated Files
 
-# Generated files
+ - When running the script, a local folder named `_build_grew` is created in the corresponding directory, storing all necessary files. This `_build_grew` folder can be safely deleted; it will be regenerated as needed.
+ - In `grew_match_quick` folder, a subfolder named `local_files`
+contains backend and frontend code, along with configuration files. This folder can be removed unless you are using the "Save" feature, as deleting it will also remove saved requests.
 
-When running, the script will generated files:
- - for each corpus used, in the corresponding folder, a local folder named `_build_grew` is added and stores all needed files.
- The files in this folder can be removed, they will be generated again later when needed.
- - in a local folder named `local_files`. This folder will be rebuild if needed for future usage, it can be safely removed except if you use the "Save" feature, removing `local_files` will also remove saved requests.
+# Troubleshooting
 
-# In case of troubles
+## Corrupted CoNLL Data
 
-## Corrupted CoNLL data
+If any CoNLL files contain errors, the corresponding sentences will be skipped, and the corpus will be built without those corrupted sentences. In such cases, a red button will appear in the interface, providing a link to a file that reports the errors.
 
-If some CoNLL files contain errors, the corresponding sentences are skipped and the corpus is built without the corrupted sentences.
-In this case, a red button appears in the interface with a link to a file reporting the errors.
-For example, the folder `examples/UD_English-Error-PUD` contains 10 sentences with 3 errors.
+**Example:** The folder `examples/UD_English-Error-PUD` cocontains 10 sentences, 3 of which have errors. To start Grew-match with the valid sentences, run:
 
 ```
 python3 grew_match_quick.py examples/UD_English-Error-PUD
 ```
 
-starts Grew-match with the 7 correct sentences and produces a log file at http://localhost:8000/meta/UD_English-Error-PUD.log with the following data:
+This command will start **Grew-match** with the 7 correct sentences and generate a log file at http://localhost:8000/meta/UD_English-Error-PUD.log containing error details, such as:
 
 ```json
 {"message":"Cannot parse id zz","file":"/Users/guillaum/gitlab/grew/grew_match_quick/examples/UD_English-Error-PUD/10_sentences.conllu","sent_id":"n01001011","line":14,"library":"Conll"}
@@ -123,17 +131,21 @@ starts Grew-match with the 7 correct sentences and produces a log file at http:/
 {"sent_id":"n01003013","file":"/Users/guillaum/gitlab/grew/grew_match_quick/examples/UD_English-Error-PUD/10_sentences.conllu","message":"Unknown src identifier `17`","line":258,"library":"Conll"}
 ```
 
-## Already used PORT
+## Port Conflicts
 
-The application uses two ports, one for the frontend (`8000` by default) and one for the backend (`8899` by default).
-If one of these ports is already used, the script will fail. In this case, you should use one of the two arguments:
- - `--backend_port xxx` with an available port number `xxx`
- - `--frontend_port yyy` with an available port number `yyy` (the URL will be [http://localhost:yyy](http://localhost:yyy))
+The application uses two ports by default:
+ - Frontend: 8000
+ - Backend: 8899
 
-## Other troubles
+If either of these ports is already in use, the script will fail to start. To resolve this, you can specify alternative ports using the following arguments:
+ - `--backend_port xxx`: Replace `xxx` with an available port number for the backend.
+ - `--frontend_port yyy` Replace `yyy` with an available port number for the frontend (the URL will then be http://localhost:yyy).
 
- - Try to add the option `--hard`, it will recompile the backend from scratch
- - :warning: stronger solution which erases saved patterns: `rm -rf local_files` and try again.
+## Additional Troubles
 
-If the script does not work as expected, you can have a look at files in `local_files/log`, mainly `backend.stderr` and `frontend.stderr` which contains the `stderr` of the two subprocesses.
-If this does not solve the issue, report your problem [here](https://github.com/grew-nlp/grew_match_quick/issues) (please join the file `local_files/log/backend.stderr` to make debugging easier).
+ - If you encounter issues, try adding the --hard option to recompile the backend from scratch.
+ - :warning: stronger solution (but which erases saved patterns): `rm -rf local_files` and try again.
+
+If the script does not work as expected, you can have a look at files in `local_files/log`, particularly `backend.stderr` and `frontend.stderr`, which contain the standard error output from the two subprocesses.
+
+If this does not solve the issue, please report your problem [here](https://github.com/grew-nlp/grew_match_quick/issues) and include the content of `local_files/log/backend.stderr` to assist with debugging.
