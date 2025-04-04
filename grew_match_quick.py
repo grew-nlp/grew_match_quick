@@ -59,19 +59,20 @@ os.makedirs(f'{swd}/local_files/grew_match/meta', exist_ok=True)
 
 
 # -------------------------------------------------------------------------------------------------
-# clone or update "grew_match_back"
-full_gmb = f"{swd}/local_files/grew_match_back"
+# clone or update "grew_match_dream"
+full_gmd = f"{swd}/local_files/grew_match_dream"
 
-if os.path.isdir(f"{full_gmb}"):
-  subprocess.run(['git', 'pull'], cwd=f"{full_gmb}")
+if os.path.isdir(f"{full_gmd}"):
+  subprocess.run(['git', 'pull'], cwd=f"{full_gmd}")
 
 else:
-  subprocess.run(['git', 'clone', 'https://gitlab.inria.fr/grew/grew_match_back.git'], cwd=f"{swd}/local_files")
+  subprocess.run(['git', 'clone', 'https://github.com/grew-nlp/grew_match_dream.git'], cwd=f"{swd}/local_files")
 if args.hard:
-  subprocess.run(['rm', '-rf', '_deps'], cwd=f"{full_gmb}")
-  subprocess.run(['make', 'clean'], cwd=f"{full_gmb}")
+  subprocess.run(['dune', 'clean'], cwd=f"{full_gmd}")
 
-os.makedirs(f'{full_gmb}/static/shorten', exist_ok=True)
+subprocess.run(['dune', 'build'], cwd=f"{full_gmd}")
+
+os.makedirs(f'{full_gmd}/static/shorten', exist_ok=True)
 
 # -------------------------------------------------------------------------------------------------
 # Check the avaibility of the back port
@@ -116,7 +117,7 @@ elif os.path.isfile (args.data):
   print (f"ERROR: Don't know what to do with the file '{args.data}'")
   exit (3)
 else:
-  print (f"ERROR: '{args.data}' is not a file or a folder")
+  print (f"ERROR: '{args.data}' is neither a file nor a folder")
   exit (3)
 
 with open(f'{swd}/local_files/corpusbank/gmq_corpora.json', 'w') as outfile:
@@ -151,24 +152,22 @@ with open(f'{swd}/local_files/grew_match/instances/gmq_instance.json', 'w') as o
 
 compile()
 
-# build the file "gmb.conf.in" in the "grew_match_back" folder
-with open(f"{full_gmb}/gmb.conf.in__TEMPLATE", "r", encoding="utf-8") as input_file:
-  with open(f"{full_gmb}/gmb.conf.in", "w", encoding="utf-8") as output_file:
-    for line in input_file:
-      line = line.replace('__LOG__', f'{swd}/local_files/log')
-      line = line.replace('__CORPUSBANK__', f'{swd}/local_files/corpusbank/')
-      if args.RESOURCES:
-        line = line.replace('__RESOURCES__', args.RESOURCES)
-      if args.GRSROOT:
-        line = line.replace('__GRSROOT__', args.GRSROOT)
-      line = line.replace('__STORAGE__', f'{full_gmb}/static/')
-      output_file.write(line)
 
+backend_config = {
+  "port": args.backend_port,
+  "prefix": "gmq",
+  "corpusbank": f'{swd}/local_files/corpusbank/',
+  "log": f'{swd}/local_files/log',
+  "storage": f'{full_gmd}/static/'
+}
+
+with open(f'{full_gmd}/config.json', 'w') as outfile:
+    json.dump(backend_config, outfile, indent=2)
 
 # start the backend server
 with open(f"{swd}/local_files/log/backend.stdout", "w") as so:
   with open(f"{swd}/local_files/log/backend.stderr", "w") as se:
-    p_back = subprocess.Popen(["make", "test.opt", f"GMB_PORT={args.backend_port}"], cwd=full_gmb, stdout=so, stderr=se)
+    p_back = subprocess.Popen(["_build/default/src/main.exe", "config.json"], cwd=full_gmd, stdout=so, stderr=se)
 
 # start the backend server
 python_command = get_python_command()
