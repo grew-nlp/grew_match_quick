@@ -6,6 +6,7 @@ import time
 import os
 import subprocess
 import requests
+import shutil
 
 parser = argparse.ArgumentParser(description="Start locally a grew_match instance")
 parser.add_argument("data", help="The data to serve in the interface (see https://github.com/grew-nlp/grew_match_quick#running-grew_match_quick for format)")
@@ -52,9 +53,14 @@ os.makedirs(f'{swd}/local_files/log', exist_ok=True)
 # -------------------------------------------------------------------------------------------------
 # clone or update "grew_match"
 if os.path.isdir(f"{swd}/local_files/grew_match"):
-  subprocess.run(['git', 'pull'], cwd=f"{swd}/local_files/grew_match")
+  remote = subprocess.run(['git', 'remote', '-v'], cwd=f"{swd}/local_files/grew_match", capture_output = True, text = True)
+  if "inria" in remote.stdout:
+    shutil.rmtree(f"{swd}/local_files/grew_match")
+    subprocess.run(['git', 'clone', 'https://github.com/grew-nlp/grew_match.git'], cwd=f"{swd}/local_files")
+  else:
+    subprocess.run(['git', 'pull'], cwd=f"{swd}/local_files/grew_match")
 else:
-  subprocess.run(['git', 'clone', 'https://gitlab.inria.fr/grew/grew_match.git'], cwd=f"{swd}/local_files")
+  subprocess.run(['git', 'clone', 'https://github.com/grew-nlp/grew_match.git'], cwd=f"{swd}/local_files")
 os.makedirs(f'{swd}/local_files/grew_match/meta', exist_ok=True)
 
 
