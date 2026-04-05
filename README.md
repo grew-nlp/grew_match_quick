@@ -61,7 +61,7 @@ Note: The corpus should contain the data from all the files with extension `.con
 By default the corpus is treated Universal Dependencies (UD) data (for the snippets and the Grew handling of edge labels).
 The option `--config=sud` should be added for SUD data.
 
-To specify right-to-left languages, add the --rtl option.
+To specify right-to-left languages, add the `--rtl` option.
 
 ### Example
 
@@ -74,7 +74,7 @@ python3 grew_match_quick.py UD_English-PUD
 
 ## Starting with a JSON File for One Corpus
 
-A corpus can be described by a JSON object with the following keys:
+A corpus is described by a JSON object with the following keys:
  - `id`: Identifier of the corpus (used in the interface and URLs)
  - `directory`: Path of the directory where the corpus is stored (prefer absolute path)
  - `config`: Either `ud` or `sud`, indicating how edge labels should be handled
@@ -91,7 +91,7 @@ Using the file `examples/UD_English-ParTUT.json`:
 {
   "id": "UD_English-ParTUT",
   "config": "ud",
-  "directory": "/Users/guillaum/resources/ud-treebanks-v2.15/UD_English-ParTUT"
+  "directory": "${RESOURCES}/ud-treebanks-v2.17/UD_English-ParTUT"
 }
 ```
 
@@ -103,11 +103,11 @@ python3 grew_match_quick.py examples/UD_English-ParTUT.json
 
 ## Starting with a JSON File for Multiple Corpora
 
-To describe multiple corpora, the JSON file should contain a list of corpus objects, each formatted as described above. Refer to the file [UD_2.15.json](https://github.com/grew-nlp/corpusbank/blob/main/UD_2.15.json) in the online Grew-match configuration for an example.
+To describe multiple corpora, the JSON file should contain a list of corpus objects, each formatted as described above. Refer to the file [UD_2.17.json](https://github.com/grew-nlp/corpusbank/blob/main/UD_2.17.json) in the online Grew-match configuration for an example.
 
 # Generated Files
 
- - When running the script, a local folder named `_build_grew` is created in the corresponding directory, storing all necessary files. This `_build_grew` folder can be safely deleted; it will be regenerated as needed.
+ - When running the script, a local folder named `_build_grew` is created in each corpus directory, storing all necessary files. This `_build_grew` folders can be safely deleted; they are regenerated as needed.
  - In `grew_match_quick` folder, a subfolder named `local_files`
 contains backend and frontend code, along with configuration files. This folder can be removed unless you are using the "Save" feature, as deleting it will also remove saved requests.
 

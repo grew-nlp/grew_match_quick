@@ -1,5 +1,5 @@
 {
   "id": "UD_English-ParTUT",
   "config": "ud",
-  "directory": "/Users/guillaum/resources/ud-treebanks-v2.13/UD_English-ParTUT"
+  "directory": "${RESOURCES}/ud-treebanks-v2.17/UD_English-ParTUT"
 }
