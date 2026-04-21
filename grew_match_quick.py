@@ -103,6 +103,7 @@ if os.path.isdir(args.data):
     "rtl": args.rtl,
     "directory": os.path.abspath(args.data)}]
 elif os.path.isfile (args.data) and args.data.endswith(".json"):
+  # if main arg is a json file
   with open(args.data, 'r') as f:
     desc = json.load (f)
     if isinstance(desc, dict):
@@ -110,6 +111,7 @@ elif os.path.isfile (args.data) and args.data.endswith(".json"):
     else:
       corpora_list = desc
 elif os.path.isfile (args.data) and (args.data.endswith(".conllu") or args.data.endswith(".conll")):
+  # if main arg is a CoNLL file
   abs = os.path.abspath(args.data)
   corpora_list = [{
     "id": os.path.basename(abs),
@@ -129,15 +131,8 @@ else:
 with open(f'{swd}/local_files/corpusbank/gmq_corpora.json', 'w') as outfile:
     json.dump(corpora_list, outfile, indent=2)
 
-instances = { 
-  f"localhost:{args.frontend_port}": { 
-    "backend": f"http://localhost:{args.backend_port}/",
-    "instance": "gmq_instance.json"
-  }
-}
-with open(f'{swd}/local_files/grew_match/instances.json', 'w') as outfile:
-    json.dump(instances, outfile, indent=2)
-
+# -------------------------------------------------------------------------------------------------
+# build the gmq_instance.json file
 if len (corpora_list) == 1:
   instance = [{
     "id": "Grew_match_quick",
@@ -156,9 +151,24 @@ else:
 with open(f'{swd}/local_files/grew_match/instances/gmq_instance.json', 'w') as outfile:
     json.dump(instance, outfile, indent=2)
 
-compile()
+# -------------------------------------------------------------------------------------------------
+# build the config.json file
+config = {
+  "snippets_url": "https://raw.githubusercontent.com/grew-nlp/corpusbank/refs/heads/main/grew_match_snippets/",
+  "instances_url": "instances/",
+  "instances": { 
+    f"localhost:{args.frontend_port}": { 
+      "backend": f"http://localhost:{args.backend_port}/",
+      "instance": "gmq_instance.json"
+    }
+  }
+}
+
+with open(f'{swd}/local_files/grew_match/config.json', 'w') as outfile:
+    json.dump(config, outfile, indent=2)
 
 
+# -------------------------------------------------------------------------------------------------
 backend_config = {
   "port": args.backend_port,
   "prefix": "gmq",
